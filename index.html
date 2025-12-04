@@ -1,12 +1,489 @@
+ß<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=p, initial-scale=1.0">
-    <title> Project 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interior Design Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <link rel="stylesheet" href="styles.css">
+        body {
+            font-family: 'Georgia', serif;
+            background: #f33993;
+            color: #efbddc;
+            overflow: hidden;
+        }
+
+        .gallery-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            padding: 30px 20px;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #be1193;
+            letter-spacing: 2px;
+        }
+
+        .sidebar p {
+            font-size: 12px;
+            color: #ff73a4;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .thumbnail {
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail:hover {
+            transform: translateX(5px);
+            border-color: #c61887;
+        }
+
+        .thumbnail.active {
+            border-color: #ff0084;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 8px auto;
+        }
+
+        .thumbnail-info h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #ff86e3;
+        }
+
+        .thumbnail-info p {
+            font-size: 11px;
+            color: #ffd3e5;
+            margin: 0;
+        }
+
+        /* Main Display */
+        .main-display {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff789;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-info {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 25px 40px;
+            border-top: 2px solid #d4af37;
+            max-width: 600px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .slide-info h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #d4af37;
+            letter-spacing: 1px;
+        }
+
+        .slide-info .details {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .slide-info p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #f5f5f5;
+        }
+
+        /* Navigation Controls */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(212, 175, 55, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-arrow.prev {
+            left: 30px;
+        }
+
+        .nav-arrow.next {
+            right: 30px;
+        }
+
+        .controls {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .control-btn {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        .control-btn.active {
+            background: #d4af37;
+            color: #000;
+        }
+
+        /* Progress indicator */
+        .progress {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #d4af37;
+            font-size: 14px;
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        /* Modal Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 0.3s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            transition: transform 0.2s ease;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .slide.clickable {
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body style="text-align: center;">
-    <p> For this project I will create a museum kind of presention on how I would like to design my house I will show how I want to have the outside of the house and then ill go through the house and show the rooms and then the the outside and the meaning it would have to me, to have a house like that. This project will be an inspo for what I have always dreamed of doing when I grow up, it is a way of what my work can be and how I can put my ideas and goals and make them real life where I can make it a living. I am excited for this project because I may have an idea of what I would like to do but it can also come out to look very differently then I had thought. So we'll see how it goes. </p>
+<body>
+    <div class="gallery-container">
+        <div class="sidebar">
+            <h1>INTERIOR GALLERY</h1>
+            <p>A curated collection of interior design exhibits</p>
+            <div id="thumbnails"></div>
+        </div>
+
+        <div class="main-display">
+            <div class="progress"><span id="current">1</span> / <span id="total">5</span></div>
+            
+            <div class="controls">
+                <button class="control-btn" id="autoplay">AUTO PLAY</button>
+                <button class="control-btn" id="fullscreen">FULLSCREEN</button>
+            </div>
+
+            <div class="nav-arrow prev" onclick="changeSlide(-1)">‹</div>
+            <div class="nav-arrow next" onclick="changeSlide(1)">›</div>
+
+            <div id="slides"></div>
+        </div>
+    </div>
+
+    <!-- Modal Popup -->
+    <div id="coralineModal" class="modal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <img src="images/coraline.jpg" alt="Coraline" class="modal-content" id="coralineImage">
+    </div>
+
+    <script>
+        const exhibits = [
+            {
+                title: "Grand Entrance",
+                style: "Contemporary Minimalism",
+                year: "2024",
+                description: "Clean lines and neutral tones create a serene living space with emphasis on natural light and functional design.",
+                image: "images/pinkdoor.jpeg"
+            },
+            {
+                title: "Beautiful Door",
+                style: "Modern Industrial",
+                year: "2023",
+                description: "Exposed brick and metal fixtures paired with warm wood accents define this urban culinary space.",
+                image: "images/openpinkdoor.png"
+            },
+            {
+                title: "Excentric Foye",
+                style: "Nordic Design",
+                year: "2024",
+                description: "Hygge-inspired bedroom featuring soft textiles, muted colors, and natural materials for ultimate comfort.",
+                image: "images/foye.jpeg"
+            },
+            {
+                title: "Kitchen",
+                style: "Vintage Glamour",
+                year: "2023",
+                description: "Luxurious dining room with geometric patterns, rich jewel tones, and statement lighting fixtures.",
+                image: "images/kitchen.jpeg"
+            },
+            {
+                title: "Modern Home Office",
+                style: "Contemporary Professional",
+                year: "2024",
+                description: "Sophisticated workspace combining ergonomic design with aesthetic appeal for productive remote work.",
+                image: "images/backdoor.jpeg"
+            }
+        ];
+
+        let currentSlide = 0;
+        let autoplayInterval;
+        let isAutoplay = false;
+
+        function init() {
+            document.getElementById('total').textContent = exhibits.length;
+            
+            const slidesContainer = document.getElementById('slides');
+            const thumbnailsContainer = document.getElementById('thumbnails');
+
+            exhibits.forEach((exhibit, index) => {
+                // Create slides
+                const slide = document.createElement('div');
+                slide.className = `slide ${index === 0 ? 'active' : ''}`;
+                slide.style.backgroundImage = `url(${exhibit.image})`;
+                
+                // Make Excentric Foye slide clickable to show coraline popup
+                if (exhibit.title === "Excentric Foye") {
+                    slide.classList.add('clickable');
+                    slide.onclick = () => openModal();
+                }
+                
+                slide.innerHTML = `
+                    <div class="slide-info">
+                        <h2>${exhibit.title}</h2>
+                        <div class="details">${exhibit.style} • ${exhibit.year}</div>
+                        <p>${exhibit.description}</p>
+                    </div>
+                `;
+                slidesContainer.appendChild(slide);
+
+                // Create thumbnails
+                const thumb = document.createElement('div');
+                thumb.className = `thumbnail ${index === 0 ? 'active' : ''}`;
+                
+                // Make Excentric Foye thumbnail clickable to show coraline popup
+                if (exhibit.title === "Excentric Foye") {
+                    thumb.onclick = () => openModal();
+                } else {
+                    thumb.onclick = () => goToSlide(index);
+                }
+                
+                thumb.innerHTML = `
+                    <img src="${exhibit.image}" alt="${exhibit.title}">
+                    <div class="thumbnail-info">
+                        <h3>${exhibit.title}</h3>
+                        <p>${exhibit.style}</p>
+                    </div>
+                `;
+                thumbnailsContainer.appendChild(thumb);
+            });
+        }
+
+        function changeSlide(direction) {
+            currentSlide = (currentSlide + direction + exhibits.length) % exhibits.length;
+            updateSlides();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlides();
+        }
+
+        function updateSlides() {
+            const slides = document.querySelectorAll('.slide');
+            const thumbs = document.querySelectorAll('.thumbnail');
+            
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+
+            thumbs.forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === currentSlide);
+            });
+
+            document.getElementById('current').textContent = currentSlide + 1;
+        }
+
+        function toggleAutoplay() {
+            isAutoplay = !isAutoplay;
+            const btn = document.getElementById('autoplay');
+            
+            if (isAutoplay) {
+                btn.classList.add('active');
+                autoplayInterval = setInterval(() => changeSlide(1), 4000);
+            } else {
+                btn.classList.remove('active');
+                clearInterval(autoplayInterval);
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function openModal() {
+            const modal = document.getElementById('coralineModal');
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('coralineModal');
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById('coralineModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === ' ') {
+                e.preventDefault();
+                toggleAutoplay();
+            }
+        });
+
+        document.getElementById('autoplay').onclick = toggleAutoplay;
+        document.getElementById('fullscreen').onclick = toggleFullscreen;
+
+        init();
+    </script>
 </body>
 </html>

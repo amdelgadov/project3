@@ -1,4 +1,39 @@
 body{
 	margin: auto;
 	width: 60%;
+	min-height: 100vh;
+	text-align: center;
+}
+
+.home-button {
+	display: block;
+	margin: 20px auto;
+	position: relative;
+	cursor: pointer;
+	text-align: center;
+}
+
+.home-button-img {
+	width: 80px;
+	height: 80px;
+	object-fit: contain;
+	cursor: pointer;
+	transition: transform 0.2s ease;
+	display: block;
+	margin: 0 auto;
+}
+
+.home-button:hover .home-button-img {
+	transform: scale(1.1);
+}
+
+img {
+	display: block;
+	margin: 0 auto;
+}
+
+/* Main content images - make them smaller */
+.main-image {
+	max-width: 70%;
+	height: auto;
 }

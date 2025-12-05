@@ -89,7 +89,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #fff789;
+            background: #000000;
         }
 
         .slide {
@@ -238,14 +238,15 @@
         }
 
         .modal-content {
-            max-width: 95%;
-            max-height: 95%;
+            max-width: 98%;
+            max-height: 98%;
             width: auto;
             height: auto;
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             animation: zoomIn 0.3s ease;
+            transform: scale(3.375);
         }
 
         .modal-close {
@@ -305,7 +306,13 @@
     <!-- Modal Popup -->
     <div id="coralineModal" class="modal">
         <span class="modal-close" onclick="closeModal()">&times;</span>
-        <img src="images/coraline.jpg" alt="Coraline" class="modal-content" id="coralineImage">
+        <img src="images/coraline.gif" alt="Coraline" class="modal-content" id="coralineImage">
+    </div>
+
+    <!-- Homebutton Modal Popup -->
+    <div id="homebuttonModal" class="modal">
+        <span class="modal-close" onclick="closeHomebuttonModal()">&times;</span>
+        <img src="images/homebutton.jpg" alt="Home Button" class="modal-content" id="homebuttonImage">
     </div>
 
     <script>
@@ -315,7 +322,7 @@
                 style: "Contemporary Minimalism",
                 year: "2024",
                 description: "Clean lines and neutral tones create a serene living space with emphasis on natural light and functional design.",
-                image: "images/pinkdoor.jpeg"
+                image: "images/house.jpeg"
             },
             {
                 title: "Beautiful Door",
@@ -368,6 +375,16 @@
                     slide.classList.add('clickable');
                     slide.onclick = () => openModal();
                 }
+                // Make Grand Entrance slide clickable to navigate to pinkdoor.html
+                if (exhibit.title === "Grand Entrance") {
+                    slide.classList.add('clickable');
+                    slide.onclick = () => window.location.href = 'pinkdoor.html';
+                }
+                // Make Kitchen slide clickable to show homebutton popup
+                if (exhibit.title === "Kitchen") {
+                    slide.classList.add('clickable');
+                    slide.onclick = () => openHomebuttonModal();
+                }
                 
                 slide.innerHTML = `
                     <div class="slide-info">
@@ -385,6 +402,14 @@
                 // Make Excentric Foye thumbnail clickable to show coraline popup
                 if (exhibit.title === "Excentric Foye") {
                     thumb.onclick = () => openModal();
+                }
+                // Make Grand Entrance thumbnail clickable to navigate to pinkdoor.html
+                else if (exhibit.title === "Grand Entrance") {
+                    thumb.onclick = () => window.location.href = 'pinkdoor.html';
+                }
+                // Make Kitchen thumbnail clickable to show homebutton popup
+                else if (exhibit.title === "Kitchen") {
+                    thumb.onclick = () => openHomebuttonModal();
                 } else {
                     thumb.onclick = () => goToSlide(index);
                 }
@@ -456,6 +481,16 @@
             modal.classList.remove('active');
         }
 
+        function openHomebuttonModal() {
+            const modal = document.getElementById('homebuttonModal');
+            modal.classList.add('active');
+        }
+
+        function closeHomebuttonModal() {
+            const modal = document.getElementById('homebuttonModal');
+            modal.classList.remove('active');
+        }
+
         // Close modal when clicking outside the image
         document.getElementById('coralineModal').addEventListener('click', function(e) {
             if (e.target === this) {
@@ -463,10 +498,18 @@
             }
         });
 
+        // Close homebutton modal when clicking outside the image
+        document.getElementById('homebuttonModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeHomebuttonModal();
+            }
+        });
+
         // Close modal with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
+                closeHomebuttonModal();
             }
         });
 
